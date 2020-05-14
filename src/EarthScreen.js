@@ -3,8 +3,8 @@ export default class EarthScreen {
     this.timeout = 15;
   }
 
-  tick(keyboard, ship, asteroids, enemies, encounters, compasses) {
-    if (keyboard.isDown(keyboard.ENTER) && this.timeout < 0) {
+  tick(keyboard, ship, asteroids, enemies, encounters, compasses, gamepad) {
+    if ((keyboard.isDown(keyboard.ENTER) || gamepad.button1) && this.timeout < 0) {
       this.timeout = 15;
       ship.landed = false;
       ship.timeout = 15;
@@ -16,7 +16,7 @@ export default class EarthScreen {
     }
     this.timeout -= 1;
 
-    if (keyboard.isDown(keyboard.SPACE) && this.timeout < 0) {
+    if ((keyboard.isDown(keyboard.SPACE) || gamepad.button0) && this.timeout < 0) {
       this.timeout = 15;
       if (ship.level >= ship.shipLevels.length - 1) return;
       let upgradeCost = ship.shipLevels[ship.level + 1].cost;

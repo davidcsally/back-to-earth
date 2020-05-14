@@ -12,6 +12,7 @@
 import Drawer from "./Drawer.js";
 import GameContainer from "./GameContainer.js";
 import Keyboard from "./Keyboard.js";
+import Gamepad from "./Gamepad.js";
 import Sound from "./Sound.js";
 import Music from "./Music.js";
 import CollisionDetector from "./CollisionDetector.js";
@@ -33,6 +34,7 @@ window.onload = () => {
 
   let drawer = new Drawer(gameContainer.canvas);
   let keyboard = new Keyboard();
+  let gamepad = new Gamepad();
   let sound = new Sound();
   let collisionDetector = new CollisionDetector();
 
@@ -48,12 +50,13 @@ window.onload = () => {
     tick();
     collisionDetection();
     draw();
+    gamepad.tick();
   };
 
   let tick = () => {
     if (ship.credits) return;
     if (ship.landed) {
-      earthScreen.tick(keyboard, ship, asteroids, enemies, encounters, compasses);
+      earthScreen.tick(keyboard, ship, asteroids, enemies, encounters, compasses, gamepad);
     } else {
       hud.tick(ship);
       compasses.tick(ship, encounters, enemies);
@@ -63,7 +66,8 @@ window.onload = () => {
         keyboard,
         sound,
         drawer,
-        asteroids.asteroids.concat(enemies.enemies)
+        asteroids.asteroids.concat(enemies.enemies),
+        gamepad
       );
       asteroids.tick();
     }

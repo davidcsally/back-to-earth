@@ -121,8 +121,8 @@ export default class Ship {
     this.level = level;
   }
 
-  weaponsTick(keyboard, sound, enemies) {
-    if (keyboard.isDown(keyboard.SPACE)) {
+  weaponsTick(keyboard, sound, enemies, gamepad) {
+    if (keyboard.isDown(keyboard.SPACE) || gamepad.button0) {
       let closestEnemy = getClosestEnemy(this.x, this.y, enemies, 260);
       fireMainWeapon({
         canFire: this.mainLaserCanFire,
@@ -170,7 +170,7 @@ export default class Ship {
     }
   }
 
-  tick(keyboard, sound, drawer, enemies) {
+  tick(keyboard, sound, drawer, enemies, gamepad) {
     this.projectiles.map(p => p.tick());
     this.projectiles = this.projectiles.filter(p => !p.shouldDie);
     if (this.exploding) {
@@ -179,7 +179,7 @@ export default class Ship {
       if (this.lifeSpan <= 0) this.death = true;
     } else {
       let distanceToEarth = Math.sqrt(this.x * this.x + this.y * this.y);
-      if (this.timeout < 0 && keyboard.isDown(keyboard.ENTER) && distanceToEarth < 50) {
+      if (this.timeout < 0 && (keyboard.isDown(keyboard.ENTER) || gamepad.button1) && distanceToEarth < 50) {
         this.landed = true;
         if (this.health < this.maxHealth) {
           this.healed = true;
@@ -187,7 +187,7 @@ export default class Ship {
       }
       if (this.finalHalo) {
         let distanceToPlanet = Math.pow(this.x - this.finalHalo[0], 2) + Math.pow(this.y - this.finalHalo[1], 2);
-        if (this.timeout < 0 && keyboard.isDown(keyboard.ENTER) && this.finalHalo && distanceToPlanet < 40000) {
+        if (this.timeout < 0 && (keyboard.isDown(keyboard.ENTER) || gamepad.button1) && this.finalHalo && distanceToPlanet < 40000) {
           this.credits = true;
         }
       }
@@ -195,9 +195,9 @@ export default class Ship {
 
       haloSize += 1;
 
-      if (keyboard.isDown(keyboard.LEFT)) yaw -= turnSpeed;
-      if (keyboard.isDown(keyboard.RIGHT)) yaw += turnSpeed;
-      state.engineOn = keyboard.isDown(keyboard.UP);
+      if (keyboard.isDown(keyboard.LEFT) || gamepad.dpadLeft) yaw -= turnSpeed;
+      if (keyboard.isDown(keyboard.RIGHT) || gamepad.dpadRight) yaw += turnSpeed;
+      state.engineOn = keyboard.isDown(keyboard.UP) || gamepad.dpadUp;
 
       if (state.engineOn) {
         this.dx += Math.sin(yaw) * acceleration;
@@ -212,7 +212,7 @@ export default class Ship {
         sound.engineOff();
       }
 
-      this.weaponsTick(keyboard, sound, enemies);
+      this.weaponsTick(keyboard, sound, enemies, gamepad);
 
       this.x += this.dx;
       this.y += this.dy;
