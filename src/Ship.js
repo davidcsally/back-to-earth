@@ -83,7 +83,15 @@ export default class Ship {
     this.dy = d;
   }
 
-  takeDamage({ damage }) {
+  takeDamage({ damage, gamepad }) {
+    if (navigator.getGamepads()[0]) {
+      gamepad = navigator.getGamepads()[0]
+      gamepad.vibrationActuator.playEffect("dual-rumble", {
+        duration: 500,
+        weakMagnitude: 1.0,
+        strongMagnitude: 1.0
+      })
+    }
     this.health -= damage;
     if (this.health <= 0) {
       this.exploding = true;
